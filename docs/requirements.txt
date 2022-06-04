@@ -1,0 +1,5 @@
+pylint
+coverage
+loguru
+pysnooper
+peewee
