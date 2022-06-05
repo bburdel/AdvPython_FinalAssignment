@@ -23,17 +23,25 @@ def add_task():
 
     Task status defaults to 'Not Started'
     """
-    task_name = input('Task name: ')
-    task_details = input('Task description: ')
-    start_date = input('Task start date: ')
-    due_date = input('Task due date: ')
-    if not t.add_task(task_name, task_details, start_date, due_date):
-        print("An error occurred while trying to add a new task.")
-    else:
-        print("Task was successfully added.")
+    try:
+        task_name = input('Task name: ')
+        task_details = input('Task description: ')
+        start_date = input('Task start date: ')
+        due_date = input('Task due date: ')
+        if not t.add_task(task_name, task_details, start_date, due_date):
+            print("An error occurred while trying to add a new task.")
+        else:
+            print("Task was successfully added.")
+    except ValueError:
+        print("The date cannot resemble the chaos you entered.")
 
 
 def update_task():
+    """
+
+    :return:
+    """
+    # TODO perhaps give options for which to alter
     task_name = input('Task name: ')
     task_details = input('Task details: ')
     start_date = input('Altered task start date: ')
@@ -108,7 +116,11 @@ def task_id_list():
 
 
 def priority_task_list():
-    pass
+    print("Tasks sort by Priority:")
+    if not tl.task_list_priority_sort():
+        print("An error occurred while trying to compile list")
+    else:
+        print('Priority list generated!')
 
 
 def due_date_list():
