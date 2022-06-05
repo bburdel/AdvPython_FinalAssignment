@@ -2,34 +2,107 @@
 menu for options presented to user
 '''
 
-
 import sys
 from loguru import logger
-
+import datetime
+import task_model
+# import main
+from task import Task as t
+from task import TaskLists as tl
 
 logger.info("Logging activity from menu.py")
 logger.add("out.log", backtrace=True, diagnose=True)
 
+
 def load_task():
     pass
 
+
 def add_task():
-    pass
+    """
+    Adds a new task to the database
+
+    Task status defaults to 'Not Started'
+    """
+    task_name = input('Task name: ')
+    task_details = input('Task description: ')
+    start_date = input('Task start date: ')
+    due_date = input('Task due date: ')
+    if not t.add_task(task_name, task_details, start_date, due_date):
+        print("An error occurred while trying to add a new task.")
+    else:
+        print("Task was successfully added.")
+
 
 def update_task():
-    pass
+    task_name = input('Task name: ')
+    task_details = input('Task details: ')
+    start_date = input('Altered task start date: ')
+    due_date = input('Altered task due date: ')
+    if not t.update_task(task_name, task_details, start_date, due_date):
+        print(f"An error occurred while trying to update the task, '{task_name}.'")
+    else:
+        print(f"Task name -- {task_name} -- was successfully updated.")
+
 
 def delete_task():
-    pass
+    """
+    Marks a task in the database as task_status = deleted
+    """
+    task_name = input('Task name: ')
+    if not t.delete_task(task_name):
+        print("An error occurred while trying to delete this task.")
+    else:
+        print("Task deleted.")
+
 
 def complete_task():
-    pass
+    task_name = input('Task name: ')
+    if not t.complete_task(task_name):
+        print("An error occurred while trying to mark task, 'Complete'.")
+    else:
+        print("Task completed!")
+
 
 def list_task_options():
+    # List all tasks sorted by task number
+    # List all tasks sorted by priority
+    # List all open tasks sorted by due date
+    # List all closed tasks between specified dates
+    # List all overdue tasks
+    sub_menu_options = {
+        'a': task_id_list,
+        'b': priority_task_list,
+        'c': due_date_list,
+        'd': closed_tasks_date_query,
+        'e': overdue_tasks,
+    }
+
+
+def task_id_list():
     pass
 
-def generate_task_report():
+
+def priority_task_list():
     pass
+
+
+def due_date_list():
+    pass
+
+
+def closed_tasks_date_query():
+    pass
+
+
+def overdue_tasks():
+    pass
+
+
+def generate_task_report():
+    print("Here is the current state of your AccompList Tasks:")
+    tl.database_report()
+
 
 def quit_program():
     """
@@ -37,9 +110,10 @@ def quit_program():
     """
     sys.exit()
 
+
 if __name__ == '__main__':
     # connect to database
-    # snm.main_social_network()
+    task_model.main_task_database()
 
     # list of function that does the work
     menu_options = {
@@ -47,7 +121,7 @@ if __name__ == '__main__':
         'B': update_task,
         'C': delete_task,
         'D': complete_task,
-        'E': list_task_options,
+        # 'E': list_task_options,
         'F': generate_task_report,
         'Q': quit_program
     }

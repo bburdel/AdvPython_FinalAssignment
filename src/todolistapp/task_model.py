@@ -41,7 +41,17 @@ class Tasks(BaseModel):
     task_start_date = pw.DateField(formats='MM/DD/YYYY')
     task_due_date = pw.DateField(formats='MM/DD/YYYY')
     task_priority = pw.CharField()
+    task_status = pw.CharField(default='In Progress')  # Maybe?: Not Started, In Progress, Completed, Deleted
 
+
+# class TasksRemoved(BaseModel):
+#     """
+#     This class curates Tasks that have been removed from the main list of tasks.
+#     """
+#     logger.info("peewee model == 'TasksRemoved' created.")
+#     task_id = pw.ForeignKeyField(Tasks, to_field='task_id')  # on_delete='CASCADE'
+#     task_name = pw.CharField(max_length=50, null=False)
+#     task_status = pw.CharField()
 
 def main_task_database():
     """
@@ -52,10 +62,10 @@ def main_task_database():
     logger.info(f"Connected to the database: {db}")
     db.execute_sql('PRAGMA foreign_keys = ON;')
     # Creates the tables in the database ready for us to use
-    logger.info("Task tables created...")
+    logger.info("Task table generating...")
     db.create_tables([Tasks])
     # db.create_tables([StatusCollection])
-    logger.info("Users and Status tables were created.")
+    logger.info("Task table created.")
 
 
 if __name__ == '__main__':
