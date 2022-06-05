@@ -60,11 +60,13 @@ class Task:
 
         if date_delta > 7:
             priority = 'Low'
+            return priority
         if 7 <= date_delta >= 3:
             priority = 'Medium'
+            return priority
         if date_delta <= 2:
             priority = 'High'
-        return priority
+            return priority
 
     @staticmethod
     def add_task(task_name, task_description, start_date, due_date):
@@ -128,11 +130,47 @@ class TaskLists:
     Curates functions relating to organizing tasks into lists
     """
 
-    def task_list_id_sort(self):
-        query = tm.Tasks.select().where(tm.Tasks.task_status != 'Deleted')
+    @staticmethod
+    def task_list_id_sort(choice):
+        try:
+            if choice.strip() == '1':
+                print('Task IDs in Ascending order:')
+                query = tm.Tasks.select().where((tm.Tasks.task_status == 'In Progress') |
+                                                (tm.Tasks.task_status == 'Completed')).order_by(tm.Tasks.task_id.asc())
+                TaskLists.print_any_list_choice(query)
+            elif choice.strip() == '2':
+                print('Task IDs in Descending order:')
+                query = tm.Tasks.select().where((tm.Tasks.task_status == 'In Progress') |
+                                                (tm.Tasks.task_status == 'Completed')).order_by(tm.Tasks.task_id.desc())
+                TaskLists.print_any_list_choice(query)
+            else:
+                print('That is not a valid option.')
+        except Exception as e:
+            print("Something went wrong, please try again.")
+            logger.info(e)
 
+    @staticmethod
+    def print_any_list_choice(query):
+        formatted_list = []
+        query_database = query
+        for row in query_database:
+            task_id = row['task_id']
+            task_name = row['task_name']
+            task_details = row['task_details']
+            task_start_date = row['task_start_date']
+            task_due_date = row['task_due_date']
+            task_priority = row['task_priority']
+            task_status = row['task_status']
+            formatted_content = [task_id, task_name, task_details, task_start_date,
+                                 task_due_date, task_priority, task_status]
+            formatted_list.append(formatted_content)
+            print("----------------------------------------------------------------------------------")
+            print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details', 'Start Date', 'Due Date',
+                                                    'Priority', 'Status'], tablefmt='github'))
+            print("----------------------------------------------------------------------------------")
 
-    def database_report(self):
+    @staticmethod
+    def database_report():
         query = tm.Tasks.select().dicts()
         formatted_list = []
         for row in query:
@@ -147,6 +185,6 @@ class TaskLists:
                                  task_due_date, task_priority, task_status]
             formatted_list.append(formatted_content)
             print("----------------------------------------------------------------------------------")
-            print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details','Start Date', 'Due Date'
+            print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details', 'Start Date', 'Due Date',
                                                     'Priority', 'Status'], tablefmt='github'))
             print("----------------------------------------------------------------------------------")

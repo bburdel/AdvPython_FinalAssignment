@@ -4,7 +4,6 @@ menu for options presented to user
 
 import sys
 from loguru import logger
-import datetime
 import task_model
 # import main
 from task import Task as t
@@ -70,7 +69,7 @@ def list_task_options():
     # List all open tasks sorted by due date
     # List all closed tasks between specified dates
     # List all overdue tasks
-    sub_menu_options = {
+    submenu_options = {
         'a': task_id_list,
         'b': priority_task_list,
         'c': due_date_list,
@@ -78,9 +77,34 @@ def list_task_options():
         'e': overdue_tasks,
     }
 
+    while True:
+        user_choice = input("""
+                                a: Tasks by Task ID
+                                b: Tasks by Priority
+                                c: Open Tasks by Date
+                                d: Closed Tasks in Date Range
+                                e: Overdue Tasks
+                                f: Return to Main Menu
+                                Please enter your choice: """)
+        if user_choice.lower() in submenu_options:
+            submenu_options[user_choice.lower()]()
+        elif user_choice.lower() == 'f':
+            break
+        else:
+            print("Invalid option. Try again.")
+
 
 def task_id_list():
-    pass
+    print("""
+                See Task ID List Sorted in:
+                1 -- Ascending order
+                2 -- Descending order
+    """)
+    choice = input('Choice: ').strip()
+    if not tl.task_list_id_sort(choice):
+        print("An error occurred while trying to compile this list.")
+    else:
+        print('List generated!')
 
 
 def priority_task_list():
@@ -101,7 +125,7 @@ def overdue_tasks():
 
 def generate_task_report():
     print("Here is the current state of your AccompList Tasks:")
-    tl.database_report()
+    return tl.database_report()
 
 
 def quit_program():
@@ -121,7 +145,7 @@ if __name__ == '__main__':
         'B': update_task,
         'C': delete_task,
         'D': complete_task,
-        # 'E': list_task_options,
+        'E': list_task_options,
         'F': generate_task_report,
         'Q': quit_program
     }
