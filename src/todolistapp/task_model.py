@@ -40,6 +40,7 @@ class Tasks(BaseModel):
     task_details = pw.CharField(max_length=100)
     task_start_date = pw.DateField(formats='MM/DD/YYYY')
     task_due_date = pw.DateField(formats='MM/DD/YYYY')
+    task_complete_date = pw.DateField(formats='MM/DD/YYYY', null=True)
     task_priority = pw.CharField()
     task_status = pw.CharField(default='In Progress')  # Maybe?: Not Started, In Progress, Completed, Deleted
 

@@ -8,6 +8,7 @@ from loguru import logger
 import peewee as pw
 import task_model as tm
 from tabulate import tabulate
+import pysnooper
 
 
 class DateHelper:
@@ -61,14 +62,15 @@ class Task:
         if date_delta > 7:
             priority = 'Low'
             return priority
-        elif 7 <= date_delta >= 3:
+        if 3 <= date_delta <= 7:
             priority = 'Medium'
             return priority
-        elif date_delta <= 2:
+        if date_delta < 3:
             priority = 'High'
             return priority
 
     @staticmethod
+    @pysnooper.snoop(depth=1)
     def add_task(task_name, task_description, start_date, due_date):
         # create a task_id automatically
         task_id = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -80,7 +82,7 @@ class Task:
             new_task.save()
             return True
         except pw.IntegrityError:
-            print("Integrity Error -- Cannot add this task to the database.")
+            print("Peewee Integrity Error -- Cannot add this task to the database.")
             return False
 
     @staticmethod
@@ -112,6 +114,7 @@ class Task:
             return False
 
     @staticmethod
+    @pysnooper.snoop(depth=1)
     def complete_task(task_name):
         """
         Marks the status column of a task as 'Completed.'
@@ -119,6 +122,7 @@ class Task:
         try:
             row_query = tm.Tasks.get(tm.Tasks.task_name == task_name)
             row_query.task_status = 'Completed'
+            row_query.task_complete_date = datetime.now()
             row_query.save()
             logger.info(f'Task name: {task_name} -- is Complete!')
             return True
@@ -139,22 +143,23 @@ class TaskLists:
     # List all overdue tasks
 
     @staticmethod
-    def print_any_list_choice(query):
+    def print_any_list_choice(query_results):
         formatted_list = []
-        for row in query:
+        for row in query_results:
             task_id = row['task_id']
             task_name = row['task_name']
             task_details = row['task_details']
             task_start_date = row['task_start_date']
             task_due_date = row['task_due_date']
+            task_complete_date = row['task_complete_date']
             task_priority = row['task_priority']
             task_status = row['task_status']
             formatted_content = [task_id, task_name, task_details, task_start_date,
-                                 task_due_date, task_priority, task_status]
+                                 task_due_date, task_complete_date, task_priority, task_status]
             formatted_list.append(formatted_content)
         print("----------------------------------------------------------------------------------")
         print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details', 'Start Date', 'Due Date',
-                                                'Priority', 'Status'], tablefmt='github'))
+                                                'Completed On', 'Priority', 'Status'], tablefmt='github'))
         print("----------------------------------------------------------------------------------")
 
     @staticmethod
@@ -167,6 +172,7 @@ class TaskLists:
             task_details = row['task_details']
             task_start_date = row['task_start_date']
             task_due_date = row['task_due_date']
+            task_complete_date = row['task_complete_date']
             task_priority = row['task_priority']
             task_status = row['task_status']
             formatted_content = [task_id, task_name, task_details, task_start_date,
@@ -174,22 +180,27 @@ class TaskLists:
             formatted_list.append(formatted_content)
         print("----------------------------------------------------------------------------------")
         print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details', 'Start Date', 'Due Date',
-                                                'Priority', 'Status'], tablefmt='github'))
+                                                'Completed On', 'Priority', 'Status'], tablefmt='github'))
         print("----------------------------------------------------------------------------------")
 
     @staticmethod
     def task_list_id_sort(choice):
-        filtered_options = ['In Progress', 'Complete']
+        # filtered_options = ['In Progress', 'Complete']
+        list_of_dicts = []
         try:
             if choice.strip() == '1':
                 print('Task IDs in Ascending order:')
-                query = tm.Tasks.select().where(tm.Tasks.task_status.in_(filtered_options)).order_by(+tm.Tasks.task_id)
-                query_dict = query.dicts()
-                # string formatting
-                TaskLists.print_any_list_choice(query_dict)
+                query = tm.Tasks.select().where(tm.Tasks.task_status.in_(['In Progress', 'Complete']))\
+                    .order_by(+tm.Tasks.task_id)
+                for result in query.dicts():
+                    list_of_dicts.append(result)
+                print(list_of_dicts)
+                TaskLists.print_any_list_choice(list_of_dicts)
+                # string formatting instead?
             elif choice.strip() == '2':
                 print('Task IDs in Descending order:')
-                query = tm.Tasks.select().where(tm.Tasks.task_status.in_(filtered_options)).order_by(-tm.Tasks.task_id)
+                query = tm.Tasks.select().where(tm.Tasks.task_status.in_(['In Progress', 'Complete']))\
+                    .order_by(-tm.Tasks.task_id)
                 query_dict = query.dicts()
                 TaskLists.print_any_list_choice(query_dict)
             else:
@@ -200,7 +211,10 @@ class TaskLists:
 
     @staticmethod
     def task_list_priority_sort():
-        query = tm.Tasks.select().where(tm.Tasks.task_status != 'Deleted')\
-            .order_by(tm.Tasks.task_due_date, tm.Tasks.task_priority)
-        for row in query:
-            print(f"{row.priority}, {row.task_due_date}, {row.task_name}, {row.task_details} ")
+        try:
+            query = tm.Tasks.select().where(tm.Tasks.task_status != 'Deleted')\
+                .order_by(tm.Tasks.task_due_date, tm.Tasks.task_priority)
+            for row in query:
+                print(f"{row.task_priority}, {row.task_due_date}, {row.task_name}, {row.task_details} ")
+        except Exception as e:
+            logger.info(e)

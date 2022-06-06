@@ -31,7 +31,7 @@ def add_task():
         if not t.add_task(task_name, task_details, start_date, due_date):
             print("An error occurred while trying to add a new task.")
         else:
-            print("Task was successfully added.")
+            print("Task added successfully.")
     except ValueError:
         print("The date cannot resemble the chaos you entered.")
 
