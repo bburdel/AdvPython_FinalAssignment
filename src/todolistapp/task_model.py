@@ -33,14 +33,14 @@ class Tasks(BaseModel):
     This class defines Tasks, which maintains details of a task for ta To Do List platform for which we want to store
     task information.
     """
-
+    # TODO more validation and checks in the parameters
     logger.info("peewee model == 'Tasks' created.")
     task_id = pw.CharField(primary_key=True)
     task_name = pw.CharField(max_length=50, null=False)
     task_details = pw.CharField(max_length=100)
-    task_start_date = pw.DateField(formats='MM/DD/YYYY')
-    task_due_date = pw.DateField(formats='MM/DD/YYYY')
-    task_complete_date = pw.DateField(formats='MM/DD/YYYY', null=True)
+    task_start_date = pw.DateField(formats='%m/%d/%Y')
+    task_due_date = pw.DateField(formats='%m/%d/%Y')
+    task_complete_date = pw.DateField(formats='%m/%d/%Y', null=True)
     task_priority = pw.CharField()
     task_status = pw.CharField(default='In Progress')  # Maybe?: Not Started, In Progress, Completed, Deleted
 

@@ -121,7 +121,7 @@ class Task:
             return False
 
     @staticmethod
-    @pysnooper.snoop(depth=1)
+    # @pysnooper.snoop()
     def complete_task(task_name):
         """
         Marks the status column of a task as 'Completed.'
@@ -129,7 +129,7 @@ class Task:
         try:
             row_query = tm.Tasks.get(tm.Tasks.task_name == task_name)
             row_query.task_status = 'Completed'
-            row_query.task_complete_date = datetime.now()
+            row_query.task_complete_date = datetime.now().strftime('%m/%d/%Y')
             row_query.save()
             logger.info(f'Task name: {task_name} -- is Complete!')
             return True
@@ -232,25 +232,52 @@ class TaskLists:
 
     # List all open tasks sorted by due date
     @staticmethod
-    def task_list_open_sort():
+    def task_list_open_sort(choice):
         """
-        Uses peewee to query SQLite database for all (non-deleted tasks) and sorts them by date.
+        Uses peewee to query SQLite database for all (non-deleted tasks, incomplete) and sorts them by date.
         """
-        # TODO present options to sort from oldest to newest, newest to oldest
-        pass
+        list_of_dicts = []
+        try:
+            if choice.strip() == '1':
+                print('Oldest to Newest Tasks:')
+                query = tm.Tasks.select().where(tm.Tasks.task_status == 'In Progress') \
+                    .order_by(+tm.Tasks.task_due_date)
+                for result in query.dicts():
+                    list_of_dicts.append(result)
+                # print(list_of_dicts)
+                TaskLists.print_any_list_choice(list_of_dicts)
+                # string formatting instead?
+            elif choice.strip() == '2':
+                print('Newest to Oldest Tasks:')
+                query = tm.Tasks.select().where(tm.Tasks.task_status == 'In Progress') \
+                    .order_by(-tm.Tasks.task_due_date)
+                query_dict = query.dicts()
+                TaskLists.print_any_list_choice(query_dict)
+            else:
+                print('That is not a valid option.')
+        except Exception as e:
+            print("Something went wrong, please try again.")
+            logger.info(e)
 
     # List all closed tasks between specified dates
     @staticmethod
+    @pysnooper.snoop()
     def task_list_completed_sort(date_1, date_2):
         """
         Uses peewee to query SQLite database for completed tasks that fall within a given date range
         """
+        list_of_dicts = []
         # Validate dates
         formatted_date1 = DateHelper.date_conversion(date_1)
         formatted_date2 = DateHelper.date_conversion(date_2)
-        # TODO Finish query to include the date range
-        query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed')
-        pass
+        # query completed tasks between dates
+        query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed' &
+                                        tm.Tasks.task_complete_date >= formatted_date1 &
+                                        tm.Tasks.task_complete_date <= formatted_date2)\
+            .order_by(tm.Tasks.task_complete_date)
+        for result in query.dicts():
+            list_of_dicts.append(result)
+        TaskLists.print_any_list_choice(list_of_dicts)
 
     # List all overdue tasks
     @staticmethod

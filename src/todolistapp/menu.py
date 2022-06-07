@@ -78,11 +78,6 @@ def list_task_options():
     """
     Basic menu for a user to select various list format options
     """
-    # List all tasks sorted by task number
-    # List all tasks sorted by priority
-    # List all open tasks sorted by due date
-    # List all closed tasks between specified dates
-    # List all overdue tasks
     submenu_options = {
         'a': task_id_list,
         'b': priority_task_list,
@@ -115,14 +110,15 @@ def task_id_list():
                         1 -- Ascending order
                         2 -- Descending order
     """)
-    try:
-        choice = input('Enter 1 or 2: ').strip()
-        if not tl.task_list_id_sort(choice):
-            print("An error occurred while trying to compile this list.")
-        else:
-            print('List generated!')
-    except Exception as e:
-        logger.info(e)
+    while True:
+        try:
+            choice = input('Enter 1 or 2: ').strip()
+            if not tl.task_list_id_sort(choice):
+                print("An error occurred while trying to compile this list.")
+            else:
+                print('List generated!')
+        except Exception as e:
+            logger.info(e)
 
 
 def priority_task_list():
@@ -135,23 +131,29 @@ def priority_task_list():
 
 # List all open tasks sorted by due date
 def due_date_list():
-    print("Open tasks sorted by due date")
+    """
+    Outputs a simple menu and table of open tasks sorted in ascending or descending order
+    """
+    print("Open Tasks sorted by Due Date")
     print("""
                         1 -- Oldest to Newest
                         2 -- Newest to Oldest
     """)
-    # try:
-    #     choice = input('Enter 1 or 2: ').strip()
-    #     if not tl.task_list_open_sort(choice):
-    #         print("An error occurred while trying to compile this list.")
-    #     else:
-    #         print('List generated!')
-    # except Exception as e:
-    #     logger.info(e)
-    pass
+    while True:
+        try:
+            choice = input('Enter 1 or 2: ').strip()
+            if not tl.task_list_open_sort(choice):
+                print("An error occurred while trying to compile this list.")
+            else:
+                print('List generated!')
+        except Exception as e:
+            logger.info(e)
 
 
 def closed_tasks_date_query():
+    """
+    Gets user input for dates and passes them to a function that filters tasks within that date range
+    """
     try:
         date_1 = input("Enter first (oldest) date in range: ")
         date_2 = input("Enter second (newest) date in range: ")
@@ -161,11 +163,23 @@ def closed_tasks_date_query():
 
 
 def overdue_tasks():
+    """
+    Outputs a table containing overdue tasks.
+    """
     print("Here are the Overdue Tasks:")
-    pass
+    try:
+        if not tl.task_list_overdue_sort():
+            print("An error occurred while trying to compile this list.")
+        else:
+            print('List generated!')
+    except Exception as e:
+        logger.info(e)
 
 
 def generate_task_report():
+    """
+    Outputs a table containing all database contents, including those marked as 'Deleted.'
+    """
     print("Here is the record of All your AccompList Tasks:")
     return tl.database_report()
 
@@ -193,9 +207,9 @@ if __name__ == '__main__':
     }
 
     # print menu of options to user
+    print("Welcome to AccompList!"
+          "\nLet us curate a List of tasks you will to Accomplish. ")
     while True:
-        print("Welcome to AccompList!"
-              "\nLet us curate a List of tasks you will to Accomplish. ")
         user_selection = input("""
                                 A: Add a task
                                 B: Update a task
