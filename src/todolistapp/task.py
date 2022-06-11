@@ -8,8 +8,8 @@ Version: Python 3.10
 
 # pylint: disable=R1710
 
-import typer
-from rich.console import Console
+# import typer
+# from rich.console import Console
 
 import datetime as d
 from datetime import datetime
@@ -20,9 +20,9 @@ import pysnooper
 import task_model as tm
 
 
-console = Console()
-
-app = typer.Typer()
+# console = Console()
+#
+# app = typer.Typer()
 
 
 class DateHelper:
@@ -85,7 +85,7 @@ class Task:
 
     @staticmethod
     # @pysnooper.snoop(depth=1)
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def add_task(task_name, task_description, start_date, due_date):
         # create a task_id automatically
         task_id = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -102,7 +102,7 @@ class Task:
             return False
 
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def update_task(task_name, task_details, start_date, due_date):
         try:
             row = tm.Tasks.get(tm.Tasks.task_name == task_name)
@@ -116,7 +116,7 @@ class Task:
             logger.info("")
 
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def delete_task(task_name):
         """
         Marks the status column of a task as 'Deleted.'
@@ -133,7 +133,7 @@ class Task:
 
     @staticmethod
     # @pysnooper.snoop()
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def complete_task(task_name):
         """
         Marks the status column of a task as 'Completed.'
@@ -178,7 +178,7 @@ class TaskLists:
         print("-"*100)
 
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def database_report():
         query = tm.Tasks.select().dicts()
         formatted_list = []
@@ -194,16 +194,16 @@ class TaskLists:
             formatted_content = [task_id, task_name, task_details, task_start_date,
                                  task_due_date, task_complete_date, task_priority, task_status]
             formatted_list.append(formatted_content)
-        print("-"*100)
+        # print("-"*100)
         print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details',
                                                 'Start Date', 'Due Date',
                                                 'Completed On', 'Priority', 'Status'],
-                       tablefmt='github'))
-        print("-"*100)
+                       tablefmt='fancy_grid'))  # 'github' --> for markdown
+        # print("-"*100)
 
     # List all tasks sorted by task number
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def task_list_id_sort(choice):
         # filtered_options = ['In Progress', 'Complete']
         list_of_dicts = []
@@ -231,7 +231,7 @@ class TaskLists:
 
     # List all tasks sorted by priority
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def task_list_priority_sort():
         """
         Uses peewee to query SQLite database for all (non-deleted) tasks
@@ -247,7 +247,7 @@ class TaskLists:
 
     # List all open tasks sorted by due date
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def task_list_open_sort(choice):
         """
         Uses peewee to query SQLite database for all (non-deleted tasks, incomplete) and sorts them by date.
@@ -277,7 +277,7 @@ class TaskLists:
 
     # List all closed tasks between specified dates
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def task_list_completed_sort(date_1, date_2):
         """
         Uses peewee to query SQLite database for completed tasks that fall within a given date range
@@ -297,7 +297,7 @@ class TaskLists:
 
     # List all overdue tasks
     @staticmethod
-    @app.command(short_help="Adds a task to the task database.")
+    # @app.command(short_help="Adds a task to the task database.")
     def task_list_overdue_sort():
         """
         Uses peewee to query SQLite database for overdue tasks
@@ -313,4 +313,4 @@ class TaskLists:
 
 if __name__ == '__main__':
     tm.main_task_database()
-    app()
+    # app()

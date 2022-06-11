@@ -60,13 +60,13 @@ def main_task_database():
     """
 
     db.connect()
-    logger.info(f"Connected to the database: {db}")
+    # logger.info(f"Connected to the database: {db}")
     db.execute_sql('PRAGMA foreign_keys = ON;')
     # Creates the tables in the database ready for us to use
-    logger.info("Task table generating...")
+    # logger.info("Task table generating...")
     db.create_tables([Tasks])
-    # db.create_tables([StatusCollection])
-    logger.info("Task table created.")
+    # # db.create_tables([StatusCollection])
+    # logger.info("Task table created.")
 
 
 if __name__ == '__main__':
