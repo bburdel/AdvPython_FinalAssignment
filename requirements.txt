@@ -5,3 +5,5 @@ coverage
 pysnooper
 peewee
 tabulate
+rich
+typer

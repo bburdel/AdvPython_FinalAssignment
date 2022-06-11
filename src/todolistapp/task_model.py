@@ -7,9 +7,9 @@ import peewee as pw
 from loguru import logger
 
 file = Path('taskmodel.db')
-if Path.exists(file):
-    Path.unlink(file)
-    logger.info(f"The existing file, {file}, was deleted.")
+# if Path.exists(file):
+#     Path.unlink(file)
+#     logger.info(f"The existing file, {file}, was deleted.")
 
 db = pw.SqliteDatabase(file)
 

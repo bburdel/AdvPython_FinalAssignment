@@ -1,6 +1,6 @@
-'''
+"""
 menu for options presented to user
-'''
+"""
 
 import sys
 from loguru import logger
