@@ -170,12 +170,12 @@ class TaskLists:
             formatted_content = [task_id, task_name, task_details, task_start_date,
                                  task_due_date, task_complete_date, task_priority, task_status]
             formatted_list.append(formatted_content)
-        print("-"*100)
+        # print("-"*100)
         print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details',
                                                 'Start Date', 'Due Date',
                                                 'Completed On', 'Priority', 'Status'],
-                       tablefmt='github'))
-        print("-"*100)
+                       tablefmt='fancy_grid'))
+        # print("-"*100)
 
     @staticmethod
     # @app.command(short_help="Adds a task to the task database.")
