@@ -1,9 +1,10 @@
 """new file to experiment with creating a CLI app with typer, rich, and sqlite3
 created with the help of the YouTube video: https://youtu.be/ynd67UwG_cI"""
 
+# pylint: disable=E0401
+
 import typer
 from rich.console import Console
-# from rich.table import Table
 import task_model
 from task import Task as t
 from task import TaskLists as tl
@@ -14,7 +15,10 @@ app = typer.Typer()
 
 
 @app.command(short_help="Adds a task to the task database")
-def create(task_name: str, task_description: str, start_date: str, due_date: str):
+def create(task_name: str = typer.Option(default=None, prompt="Enter Task Name", prompt_required=True),
+           task_description: str = typer.Option(default=None, prompt="Enter Task details", prompt_required=True),
+           start_date: str = typer.Option(default=None, prompt="Enter Start Date", prompt_required=True),
+           due_date: str = typer.Option(default=None, prompt="Enter Due Date", prompt_required=True)):
     """
     Placeholder text
     :param task_name:
@@ -24,7 +28,7 @@ def create(task_name: str, task_description: str, start_date: str, due_date: str
     :return:
     """
     t.add_task(task_name, task_description, start_date, due_date)
-    typer.secho(f"Adding, '{task_name}'to the list.", fg=typer.colors.BRIGHT_CYAN)
+    typer.secho(f"Added, '{task_name}'to the list.", fg=typer.colors.BRIGHT_CYAN)
 
 
 @app.command(help="Mark a task, 'Completed'")
@@ -37,9 +41,10 @@ def complete(task_name: str = typer.Option(default=None,
     :return:
     """
     t.complete_task(task_name)
+    typer.secho(f"Congrats on completing: {task_name}", fg=typer.colors.BRIGHT_GREEN)
 
 
-@app.command(help="Marks as task in the database as, 'Deleted'")
+@app.command(help="Marks task in the database as, 'Deleted'")
 def delete(task_name: str = typer.Option("Task name to delete: ",
                                          help="Exact name of the task to be deleted")):
     """
@@ -48,11 +53,22 @@ def delete(task_name: str = typer.Option("Task name to delete: ",
     :return:
     """
     t.delete_task(task_name)
-    typer.echo(f"Deleting {task_name}...")
+    typer.secho(f"Deleted {task_name}...", fg=typer.colors.RED)
 
 
 @app.command(short_help="Updates a task in the task database")
-def update(task_name: str, task_details: str, start_date: str, due_date: str):
+def update(task_name: str = typer.Option(default=None,
+                                         prompt="Enter Updated Task Name",
+                                         prompt_required=True),
+           task_details: str = typer.Option(default=None,
+                                            prompt="Enter Updated Task details",
+                                            prompt_required=True),
+           start_date: str = typer.Option(default=None,
+                                          prompt="Enter Same Start Date or Update it",
+                                          prompt_required=True),
+           due_date: str = typer.Option(default=None,
+                                        prompt="Enter Same Due Date or Update it",
+                                        prompt_required=True)):
     """
     Placeholder text
     :param task_name:
@@ -109,8 +125,13 @@ def list_open(choice: str =
     tl.task_list_open_sort(choice)
 
 
-@app.command(short_help="List all completed tasks between a date range")
-def list_between(date_1: str, date_2: str):
+@app.command(short_help="List completed tasks in a date range")
+def list_between(date_1: str = typer.Option(default=None,
+                                            prompt="Enter older date",
+                                            prompt_required=True),
+                 date_2: str = typer.Option(default=None,
+                                            prompt="Enter newer date",
+                                            prompt_required=True)):
     """
     Placeholder text
     :param date_1:

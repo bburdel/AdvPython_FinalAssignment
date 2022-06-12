@@ -227,12 +227,14 @@ class TaskLists:
         """
         Uses peewee to query SQLite database for all (non-deleted) tasks
         """
+        underline = '\033[4m'
         try:
             query = tm.Tasks.select().where(tm.Tasks.task_status != 'Deleted') \
                 .order_by(tm.Tasks.task_due_date, tm.Tasks.task_priority)
             for row in query:
-                print(f"{row.task_priority}, {row.task_due_date}, "
-                      f"{row.task_name}, {row.task_details} ")
+                print("PRIORITIZED TASK LIST")
+                print((underline + "Priority:"), f"{row.task_priority}" +
+                      (underline + "Task:"), f"{row.task_name}")
         except Exception as e:
             logger.info(e)
 
@@ -276,9 +278,12 @@ class TaskLists:
         formatted_date1 = DateHelper.date_conversion(date_1)
         formatted_date2 = DateHelper.date_conversion(date_2)
         # query completed tasks between dates
-        query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed' &
-                                        tm.Tasks.task_complete_date >= formatted_date1 &
-                                        tm.Tasks.task_complete_date <= formatted_date2)\
+        # query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed' &
+        #                                 tm.Tasks.task_complete_date >= formatted_date1 &
+        #                                 tm.Tasks.task_complete_date <= formatted_date2)\
+        #     .order_by(tm.Tasks.task_complete_date)
+        query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed'
+                                        & tm.Tasks.task_due_date.between(date_1, date_2))\
             .order_by(tm.Tasks.task_complete_date)
         for result in query.dicts():
             list_of_dicts.append(result)
