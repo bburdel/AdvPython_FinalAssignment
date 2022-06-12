@@ -14,7 +14,7 @@ from datetime import datetime
 from loguru import logger
 import peewee as pw
 from tabulate import tabulate
-import pysnooper
+# import pysnooper
 import task_model as tm
 
 
@@ -33,7 +33,7 @@ class DateHelper:
             print("Invalid date. Cannot assign a task to the past.")
             return False
         else:
-            logger.info("\tDate accepted.")
+            # logger.info("\tDate accepted.")
             return True
 
     @staticmethod
@@ -104,6 +104,7 @@ class Task:
             row.save()
             return True
         except pw.DoesNotExist:
+            print("Peewee Error: pw.DoesNotExist")
             logger.info("")
 
     @staticmethod
@@ -115,7 +116,8 @@ class Task:
             row_query = tm.Tasks.get(tm.Tasks.task_name == task_name)
             row_query.task_status = 'Deleted'
             row_query.save()
-            logger.info(f'Task name: {task_name} -- marked as deleted.')
+            # logger.info(f'Task name: {task_name} -- marked as deleted.')
+            # print(f'Task name: {task_name} -- marked as deleted.')
             return True
         except pw.DoesNotExist:
             logger.info(f'Could not modify task with name, "{task_name}," as it was not found.')
@@ -227,14 +229,14 @@ class TaskLists:
         """
         Uses peewee to query SQLite database for all (non-deleted) tasks
         """
-        underline = '\033[4m'
+        # underline = '\033[4m'
+        bullet = '\u2022'
         try:
             query = tm.Tasks.select().where(tm.Tasks.task_status != 'Deleted') \
-                .order_by(tm.Tasks.task_due_date, tm.Tasks.task_priority)
+                .order_by(tm.Tasks.task_due_date)
+            print("Prioritized Task List")
             for row in query:
-                print("PRIORITIZED TASK LIST")
-                print((underline + "Priority:"), f"{row.task_priority}" +
-                      (underline + "Task:"), f"{row.task_name}")
+                print("\t" + bullet + f" {row.task_name} ({row.task_priority}) Due Date: {row.task_due_date}")
         except Exception as e:
             logger.info(e)
 
@@ -283,7 +285,7 @@ class TaskLists:
         #                                 tm.Tasks.task_complete_date <= formatted_date2)\
         #     .order_by(tm.Tasks.task_complete_date)
         query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed'
-                                        & tm.Tasks.task_due_date.between(date_1, date_2))\
+                                        & tm.Tasks.task_due_date.between(formatted_date1, formatted_date2))\
             .order_by(tm.Tasks.task_complete_date)
         for result in query.dicts():
             list_of_dicts.append(result)
@@ -302,4 +304,3 @@ class TaskLists:
         for result in query.dicts():
             list_of_dicts.append(result)
         TaskLists.print_any_list_choice(list_of_dicts)
-

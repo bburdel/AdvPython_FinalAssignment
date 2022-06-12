@@ -28,7 +28,7 @@ def create(task_name: str = typer.Option(default=None, prompt="Enter Task Name",
     :return:
     """
     t.add_task(task_name, task_description, start_date, due_date)
-    typer.secho(f"Added, '{task_name}'to the list.", fg=typer.colors.BRIGHT_CYAN)
+    typer.secho(f"Added, '{task_name},' to the list.", fg=typer.colors.BRIGHT_CYAN)
 
 
 @app.command(help="Mark a task, 'Completed'")
@@ -45,7 +45,8 @@ def complete(task_name: str = typer.Option(default=None,
 
 
 @app.command(help="Marks task in the database as, 'Deleted'")
-def delete(task_name: str = typer.Option("Task name to delete: ",
+def delete(task_name: str = typer.Option(default=None,
+                                         prompt="Task name to delete",
                                          help="Exact name of the task to be deleted")):
     """
     Placeholder text
@@ -53,7 +54,7 @@ def delete(task_name: str = typer.Option("Task name to delete: ",
     :return:
     """
     t.delete_task(task_name)
-    typer.secho(f"Deleted {task_name}...", fg=typer.colors.RED)
+    typer.secho(f"Deleted {task_name}.", fg=typer.colors.RED)
 
 
 @app.command(short_help="Updates a task in the task database")
