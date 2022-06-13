@@ -79,7 +79,7 @@ def update(task_name: str = typer.Option(default=None,
     :return:
     """
     t.update_task(task_name, task_details, start_date, due_date)
-    typer.secho(f"Updating {task_name}...")
+    typer.secho(f"Updated Original Task Name: {task_name}...", fg=typer.colors.YELLOW)
 
 
 @app.command(short_help="Creates a table of all existing database contents")
@@ -89,6 +89,7 @@ def print_all_tasks():
     :return:
     """
     tl.database_report()
+    typer.secho(f"Report complete!", fg=typer.colors.BRIGHT_BLUE)
     # return True
 
 

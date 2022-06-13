@@ -14,11 +14,15 @@ from datetime import datetime
 from loguru import logger
 import peewee as pw
 from tabulate import tabulate
+import typer
 # import pysnooper
 import task_model as tm
 
 
 class DateHelper:
+    """
+    A class containing functions that work with datetime objects and date strings.
+    """
 
     @staticmethod
     def check_for_past_date(date):
@@ -50,16 +54,16 @@ class DateHelper:
 
 class Task:
     """
-    Placeholder text about the task class
+    Contains functions that use the peewee library to manipulate data in a sqlite database
     """
 
     @staticmethod
     def get_priority(start_date, due_date):
         """
         Calculates the difference between two dates.
-        :param start_date:
-        :param due_date:
-        :return:
+        :param start_date: (string) a date
+        :param due_date: (string) a date
+        :return: (string) priority classification
         """
         start_date_converted = DateHelper.date_conversion(start_date)
         due_date_converted = DateHelper.date_conversion(due_date)
@@ -79,6 +83,14 @@ class Task:
     @staticmethod
     # @pysnooper.snoop(depth=1)
     def add_task(task_name, task_description, start_date, due_date):
+        """
+
+        :param task_name:
+        :param task_description:
+        :param start_date:
+        :param due_date:
+        :return:
+        """
         # create a task_id automatically
         task_id = datetime.now().strftime('%Y%m%d%H%M%S')
 
@@ -95,6 +107,14 @@ class Task:
 
     @staticmethod
     def update_task(task_name, task_details, start_date, due_date):
+        """
+
+        :param task_name:
+        :param task_details:
+        :param start_date:
+        :param due_date:
+        :return:
+        """
         try:
             row = tm.Tasks.get(tm.Tasks.task_name == task_name)
             row.task_details = task_details
@@ -147,12 +167,12 @@ class TaskLists:
     """
 
     @staticmethod
-    def print_list_not_table(query_results):
-        pass
-        # TODO work on a list/dict comprehension for string formatting a nice list
-
-    @staticmethod
     def print_any_list_choice(query_results):
+        """
+        Organizes data in a dictionary into a table using the 'tabulate' module
+        :param query_results:
+        :return:
+        """
         formatted_list = []
         for row in query_results:
             task_id = row['task_id']
@@ -166,15 +186,18 @@ class TaskLists:
             formatted_content = [task_id, task_name, task_details, task_start_date,
                                  task_due_date, task_complete_date, task_priority, task_status]
             formatted_list.append(formatted_content)
-        # print("-"*100)
-        print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details',
-                                                'Start Date', 'Due Date',
-                                                'Completed On', 'Priority', 'Status'],
-                       tablefmt='fancy_grid'))
-        # print("-"*100)
+        colored_table = tabulate(formatted_list, headers=['Task ID', 'Name', 'Details',
+                                                          'Start Date', 'Due Date',
+                                                          'Completed On', 'Priority', 'Status'],
+                                 tablefmt='fancy_grid')
+        typer.secho(f"{colored_table}", fg=typer.colors.BRIGHT_BLACK)
 
     @staticmethod
     def database_report():
+        """
+
+        :return:
+        """
         query = tm.Tasks.select().dicts()
         formatted_list = []
         for row in query:
@@ -189,17 +212,19 @@ class TaskLists:
             formatted_content = [task_id, task_name, task_details, task_start_date,
                                  task_due_date, task_complete_date, task_priority, task_status]
             formatted_list.append(formatted_content)
-        # print("-"*100)
         print(tabulate(formatted_list, headers=['Task ID', 'Name', 'Details',
                                                 'Start Date', 'Due Date',
                                                 'Completed On', 'Priority', 'Status'],
                        tablefmt='fancy_grid'))  # 'github' --> for markdown
-        # print("-"*100)
 
     # List all tasks sorted by task number
     @staticmethod
     def task_list_id_sort(choice):
-        # filtered_options = ['In Progress', 'Complete']
+        """
+
+        :param choice:
+        :return:
+        """
         list_of_dicts = []
         try:
             if choice.strip() == '1':
@@ -234,9 +259,19 @@ class TaskLists:
         try:
             query = tm.Tasks.select().where(tm.Tasks.task_status != 'Deleted') \
                 .order_by(tm.Tasks.task_due_date)
-            print("Prioritized Task List")
+            # print("Prioritized Task List")
+            typer.secho("Prioritized Task List", fg=typer.colors.BRIGHT_BLUE)
             for row in query:
-                print("\t" + bullet + f" {row.task_name} ({row.task_priority}) Due Date: {row.task_due_date}")
+                # print("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}")
+                if row.task_priority == "High":
+                    typer.secho("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}",
+                                fg=typer.colors.BRIGHT_RED)
+                if row.task_priority == "Medium":
+                    typer.secho("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}",
+                                fg=typer.colors.BRIGHT_YELLOW)
+                if row.task_priority == "Low":
+                    typer.secho("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}",
+                                fg=typer.colors.BRIGHT_GREEN)
         except Exception as e:
             logger.info(e)
 
@@ -285,7 +320,7 @@ class TaskLists:
         #                                 tm.Tasks.task_complete_date <= formatted_date2)\
         #     .order_by(tm.Tasks.task_complete_date)
         query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed'
-                                        & tm.Tasks.task_due_date.between(formatted_date1, formatted_date2))\
+                                        & tm.Tasks.task_due_date.between(formatted_date1, formatted_date2)) \
             .order_by(tm.Tasks.task_complete_date)
         for result in query.dicts():
             list_of_dicts.append(result)
@@ -299,7 +334,7 @@ class TaskLists:
         """
         list_of_dicts = []
         today = datetime.now()
-        query = tm.Tasks.select().where(tm.Tasks.task_due_date < today)\
+        query = tm.Tasks.select().where(tm.Tasks.task_due_date < today) \
             .order_by(+tm.Tasks.task_due_date)
         for result in query.dicts():
             list_of_dicts.append(result)
