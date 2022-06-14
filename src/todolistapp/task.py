@@ -2,12 +2,13 @@
 Title: task.py
 Description: Code containing classes that organize task details like dates and lists,
 as well as manipulate those task in a SQLite3 database.
-Author:
+Author: BBurdelsky
 Version: Python 3.10
 """
 
 # pylint: disable=R1710
 
+# TODO write the data to the database as all lowercase? Then string format in the tables?
 
 import datetime as d
 from datetime import datetime
@@ -84,12 +85,12 @@ class Task:
     # @pysnooper.snoop(depth=1)
     def add_task(task_name, task_description, start_date, due_date):
         """
-
-        :param task_name:
-        :param task_description:
-        :param start_date:
-        :param due_date:
-        :return:
+        Adds a task to a SQLite database table called Tasks
+        :param task_name: (string) of task name
+        :param task_description: (string) task details/description
+        :param start_date: (string) date the task starts
+        :param due_date: (string) date the task is due
+        :return: (bool) True if a task is successfully added, False otherwise
         """
         # create a task_id automatically
         task_id = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -108,12 +109,12 @@ class Task:
     @staticmethod
     def update_task(task_name, task_details, start_date, due_date):
         """
-
-        :param task_name:
-        :param task_details:
-        :param start_date:
-        :param due_date:
-        :return:
+        Modifies each parameter
+        :param task_name: (string) of task name
+        :param task_details: (string) task details/description
+        :param start_date: (string) date the task starts
+        :param due_date: (string) date the task is due
+        :return: (bool) True if a task is successfully updated, False otherwise
         """
         try:
             row = tm.Tasks.get(tm.Tasks.task_name == task_name)
@@ -126,28 +127,31 @@ class Task:
         except pw.DoesNotExist:
             print("Peewee Error: pw.DoesNotExist")
             logger.info("")
+            return False
 
     @staticmethod
     def delete_task(task_name):
         """
         Marks the status column of a task as 'Deleted.'
+        :param task_name: (string) name of task
+        :return: (bool)
         """
         try:
             row_query = tm.Tasks.get(tm.Tasks.task_name == task_name)
             row_query.task_status = 'Deleted'
             row_query.save()
             # logger.info(f'Task name: {task_name} -- marked as deleted.')
-            # print(f'Task name: {task_name} -- marked as deleted.')
             return True
         except pw.DoesNotExist:
             logger.info(f'Could not modify task with name, "{task_name}," as it was not found.')
             return False
 
     @staticmethod
-    # @pysnooper.snoop()
     def complete_task(task_name):
         """
         Marks the status column of a task as 'Completed.'
+        :param task_name: (string) name of task
+        :return: (bool)
         """
         try:
             row_query = tm.Tasks.get(tm.Tasks.task_name == task_name)

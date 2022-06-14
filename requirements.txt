@@ -10,3 +10,4 @@ typer
 flask
 flask-restful
 sqlalchemy
+ascii-art-cli

@@ -11,6 +11,13 @@ from flask import jsonify
 db_connect = create_engine("sqlite:///taskmodel.db")
 
 
+# TODO what does it make sense to query? -- entire db contents? all task names, some of the lists?
+class Tasks(Resource):
+    def get(self):
+        conn = db_connect.connect()
+        query = "select * from Tasks"
+
+
 class TasksNames(Resource):
     def get(self):
         # open connection to the database
