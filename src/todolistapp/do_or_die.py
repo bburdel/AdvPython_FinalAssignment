@@ -9,6 +9,7 @@ Author: BBurdelsky
 
 import typer
 from rich.console import Console
+import requests
 import task_model
 from task import Task as t
 from task import TaskLists as tl
@@ -24,11 +25,11 @@ def create(task_name: str = typer.Option(default=None, prompt="Enter Task Name",
            start_date: str = typer.Option(default=None, prompt="Enter Start Date", prompt_required=True),
            due_date: str = typer.Option(default=None, prompt="Enter Due Date", prompt_required=True)):
     """
-    Placeholder text
-    :param task_name:
-    :param task_description:
-    :param start_date:
-    :param due_date:
+    Adds a task to a database
+    :param task_name: (string)
+    :param task_description: (string)
+    :param start_date: (string)
+    :param due_date: (string)
     :return:
     """
     t.add_task(task_name, task_description, start_date, due_date)
@@ -200,10 +201,43 @@ def list_between(date_1: str = typer.Option(default=None,
 @app.command(short_help="List all overdue tasks.")
 def list_overdue():
     """
-    Placeholder text
+    Presents a list of overdue tasks to the user
     :return:
     """
     tl.task_list_overdue_sort()
+    typer.secho("""                                                                                                                     
+                                                  .;*+?##S%%%SS##?+;                                                    
+                                              *?#S%%%@@@@@@@@@@@@@@@%S#+.                                               
+                                           *?S%%%%%@@@@@@@@@@@@@@@@@@@@@%S?.                                            
+                                         +#%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@%#;                                          
+                                       ,?SS%%%%%%%@%@@@@@@@@@@@@@@@@@@@@@@@@@%#.                                        
+                                      .?#?S%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@@@@@@@S.                                       
+                                      *#S??SSS##S#S##############SS%%%%@@@@@@@%%+                                       
+                                      +#S#?#%####S%%%%SS##??#?##S%%%%%@@@@@@@%%%?                                       
+                                     .?#S#??%%%%%%S##SSSSS####SSS%%%%%@@@@@@%%%%#                                       
+                                     .?####%%%%S#+*.,;;*+???????++,,**?S%@@@%%%%#                                       
+                                      +???##+;.      .,;*;;++**?+,       ,*?%%%%+                                       
+                                      +++??            ,**+S%#++,           +%%S,                                       
+                                      *++??*           ;??S%%%S?*          ;%%%#                                        
+                                      .???##+;.....,*+??#?+;*S%%S??+*,.;*,+#%%%?.                                       
+                                      .?####?+++++*+++??+.   ,?S#????????##S%%%S*                                       
+                                       ,?#?+*;,,,..;*++.       ,??+*. .,*++#SS#,                                        
+                                        .*+;,,,*+*;*?#?*,.;;. ,*#%#?**;;+;,+?#,                                         
+                                         .,     *###%%?#?#?######@%S#?,,+. .;;                                          
+                                                ,?##SS#S?#??#%#%S%%%S?                                                  
+                                                .*++?##%##%?S%?%#S?##+                                                  
+                                                  ,,,*++**+**++++*;;  
+
+                                                  TIME TO DO OR DIE
+                                                  """, fg=typer.colors.BRIGHT_RED)
+
+
+@app.command(short_help="get jsonified data from URL")
+def get_data(enpoint: str = typer.Option(default=None, prompt="Enter /<url end>")):
+    url = f"http://127.0.0.1:5000/{enpoint}"
+    response = requests.get(url)
+    typer.secho(f"{response.content}", fg=typer.colors.BRIGHT_CYAN)
+
 
 
 if __name__ == '__main__':

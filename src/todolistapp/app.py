@@ -24,7 +24,9 @@ class TasksNames(Resource):
         conn = db_connect.connect()
         query = conn.execute(
             "select * from Tasks")
-        result = {"task name": [row[1] for row in query.cursor.fetchall()]}
+        # result = {"task name": [row[1] for row in query.cursor.fetchall()]}
+        result = {"data": [dict(zip(tuple(query.keys()), i))
+                           for i in query.cursor]}
         conn.connect()
         return jsonify(result)
 
@@ -33,7 +35,7 @@ def main():
     app = Flask(__name__)
 
     api = Api(app)
-    api.add_resource(TasksNames, "/tasks")  # Route 1
+    api.add_resource(TasksNames, "/all")  # Route 1
 
     app.run(port=5000)
 
