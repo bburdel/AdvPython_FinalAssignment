@@ -4,7 +4,7 @@ the sqlite/peewee model
 
 from pathlib import Path
 import peewee as pw
-# from loguru import logger
+from loguru import logger
 
 file = Path('taskmodel.db')
 # if Path.exists(file):
@@ -34,7 +34,7 @@ class Tasks(BaseModel):
     task information.
     """
     # TODO more validation and checks in the parameters
-    # logger.info("peewee model == 'Tasks' created.")
+    logger.info("peewee model == 'Tasks' created.")
     task_id = pw.CharField(primary_key=True)
     task_name = pw.CharField(max_length=50, null=False)
     task_details = pw.CharField(max_length=100)

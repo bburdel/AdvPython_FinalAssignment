@@ -10,7 +10,7 @@ Author: BBurdelsky
 import typer
 from rich.console import Console
 import requests
-import task_model
+import todolistapp.task_model as tm
 from task import Task as t
 from task import TaskLists as tl
 
@@ -246,9 +246,8 @@ def get_data(enpoint: str = typer.Option(default=None, prompt="Enter /<url end>"
     typer.secho(f"{response.content}", fg=typer.colors.BRIGHT_CYAN)
 
 
-
 if __name__ == '__main__':
     # connect to database
-    task_model.main_task_database()
+    tm.main_task_database()
 
     app()
