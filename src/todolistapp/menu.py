@@ -8,6 +8,7 @@ import task_model
 # import main
 from task import Task as t
 from task import TaskLists as tl
+import pysnooper
 
 logger.info("Logging activity from menu.py")
 logger.add("out.log", backtrace=True, diagnose=True)
@@ -161,7 +162,7 @@ def closed_tasks_date_query():
     except Exception as e:
         logger.info(e)
 
-
+# @pysnooper.snoop(depth=2)
 def overdue_tasks():
     """
     Outputs a table containing overdue tasks.
@@ -172,6 +173,8 @@ def overdue_tasks():
             print("An error occurred while trying to compile this list.")
         else:
             print('List generated!')
+    except StopIteration:
+        logger.info("The end of the database contents has been reached")
     except Exception as e:
         logger.info(e)
 

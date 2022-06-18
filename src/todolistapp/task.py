@@ -16,7 +16,7 @@ from loguru import logger
 import peewee as pw
 from tabulate import tabulate
 import typer
-# import pysnooper
+import pysnooper
 import task_model as tm
 
 
@@ -310,21 +310,15 @@ class TaskLists:
 
     # List all closed tasks between specified dates
     @staticmethod
-    def task_list_completed_sort(date_1, date_2):
+    def task_list_completed_sort(date_1: str, date_2: str):
         """
         Uses peewee to query SQLite database for completed tasks that fall within a given date range
+        :param date_1:
+        :param date_2:
         """
         list_of_dicts = []
-        # Validate dates
-        formatted_date1 = DateHelper.date_conversion(date_1)
-        formatted_date2 = DateHelper.date_conversion(date_2)
-        # query completed tasks between dates
-        # query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed' &
-        #                                 tm.Tasks.task_complete_date >= formatted_date1 &
-        #                                 tm.Tasks.task_complete_date <= formatted_date2)\
-        #     .order_by(tm.Tasks.task_complete_date)
-        query = tm.Tasks.select().where(tm.Tasks.task_status == 'Completed'
-                                        & tm.Tasks.task_due_date.between(formatted_date1, formatted_date2)) \
+        query = tm.Tasks.select().where((tm.Tasks.task_status == 'Completed')
+                                        & (tm.Tasks.task_due_date.between(date_1, date_2))) \
             .order_by(tm.Tasks.task_complete_date)
         for result in query.dicts():
             list_of_dicts.append(result)
@@ -332,14 +326,19 @@ class TaskLists:
 
     # List all overdue tasks
     @staticmethod
+    # @pysnooper.snoop(depth=2)
     def task_list_overdue_sort():
         """
         Uses peewee to query SQLite database for overdue tasks
         """
         list_of_dicts = []
-        today = datetime.now()
-        query = tm.Tasks.select().where(tm.Tasks.task_due_date < today) \
+        today = datetime.now().date().strftime('%m/%d/%Y')
+        query = tm.Tasks.select().where((tm.Tasks.task_status == 'In Progress')
+                                        & (tm.Tasks.task_due_date <= today))\
             .order_by(+tm.Tasks.task_due_date)
-        for result in query.dicts():
-            list_of_dicts.append(result)
+        try:
+            for result in query.dicts():
+                list_of_dicts.append(result)
+        except StopIteration:
+            logger.info("StopIteration triggered.")
         TaskLists.print_any_list_choice(list_of_dicts)

@@ -16,7 +16,7 @@ from task import TaskLists as tl
 
 console = Console()
 
-app = typer.Typer()
+app = typer.Typer(help=("--Do Or Die--" + "\nYour Tasks Are Nigh"))
 
 
 @app.command(short_help="Adds a task to the task database")
@@ -43,7 +43,7 @@ def complete(task_name: str = typer.Option(default=None,
     """
     Completes a task in a database by using the function 'complete_task' from file task.py
     :param task_name: (string) name of task
-    :return: None
+    :return:
     """
     t.complete_task(task_name)
     typer.secho(f"{task_name} -- LAID TO REST", fg=typer.colors.BRIGHT_GREEN)
@@ -77,14 +77,20 @@ def complete(task_name: str = typer.Option(default=None,
 @app.command(help="Marks task in the database as, 'Deleted'")
 def delete(task_name: str = typer.Option(default=None,
                                          prompt="Task name to delete",
-                                         help="Exact name of the task to be deleted")):
+                                         help="Exact name of the task to be deleted"),
+           force: bool = typer.Option(default=True,
+                                      prompt="Are you sure you want to delete this task? [y/n]")):
     """
-    Placeholder text
-    :param task_name:
+    Changes the status of a task in the database from 'In Progress' (the default) to Deleted'.
+    :param force: a CLI option, if not provided, is prompted (see Typer documentation)
+    :param task_name: (string) exact string of the task name
     :return:
     """
-    t.delete_task(task_name)
-    typer.secho(f"Sent {task_name} to OBLIVION.", fg=typer.colors.RED)
+    if force:
+        t.delete_task(task_name)
+        typer.secho(f"Sent -- {task_name} -- to OBLIVION.", fg=typer.colors.RED)
+    else:
+        typer.secho("Operation canceled.", fg=typer.colors.RED)
 
 
 @app.command(short_help="Updates a task in the task database")
@@ -101,11 +107,11 @@ def update(task_name: str = typer.Option(default=None,
                                         prompt="Enter Same Due Date or Update it",
                                         prompt_required=True)):
     """
-    Placeholder text
-    :param task_name:
-    :param task_details:
-    :param start_date:
-    :param due_date:
+    Updates a task in the database with new value (if the user wishes) for each parameter.
+    :param task_name: (string)
+    :param task_details: (string)
+    :param start_date: (string)
+    :param due_date: (string)
     :return:
     """
     t.update_task(task_name, task_details, start_date, due_date)
@@ -113,9 +119,9 @@ def update(task_name: str = typer.Option(default=None,
 
 
 @app.command(short_help="Creates a table of all existing database contents")
-def print_all_tasks():
+def see_all_tasks():
     """
-    Placeholder text
+    Outputs all tasks in the database to the user. This includes deleted tasks as well.
     :return:
     """
     typer.secho("""                                                                                                                     
@@ -141,7 +147,7 @@ def print_all_tasks():
                                                 .*++?##%##%?S%?%#S?##+                                                  
                                                   ,,,*++**+**++++*;;  
                                                   
-                                                  TIME TO DO OR DIE
+                                                  TIME TO DO! ...OR DIE
                                                   """, fg=typer.colors.BRIGHT_BLACK)
     tl.database_report()
     typer.secho(f"Report complete!", fg=typer.colors.BRIGHT_BLUE)
@@ -153,8 +159,9 @@ def list_ids(choice: str = typer.Option(default=None,
                                         prompt="Enter 1 for Ascending or 2 for Descending",
                                         prompt_required=True)):
     """
-    Placeholder text
-    :param choice:
+    Outputs a table to the user showing all tasks sorted by task idea. User has the option to see the table
+    sorted by ascending or descending task id order.
+    :param choice: (string) of a number representing a choice
     :return:
     """
     tl.task_list_id_sort(choice)
