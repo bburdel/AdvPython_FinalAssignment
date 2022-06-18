@@ -17,7 +17,7 @@ import peewee as pw
 from tabulate import tabulate
 import typer
 import pysnooper
-import task_model as tm
+import todolistapp.task_model as tm
 
 
 class DateHelper:

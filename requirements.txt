@@ -12,5 +12,4 @@ flask-restful
 sqlalchemy~=1.4.37
 ascii-art-cli
 pycurl
-
 requests~=2.28.0
