@@ -16,7 +16,7 @@ from todolistapp.task import TaskLists as tl
 
 console = Console()
 
-app = typer.Typer(help=("--Do Or Die--" + "\nYour Tasks Are Nigh"))
+app = typer.Typer(help=("--Do Or Die--\n" + "\nYour Tasks Are Nigh"))
 
 
 @app.command(short_help="Adds a task to the task database")
@@ -243,7 +243,7 @@ def list_overdue():
 def get_data(enpoint: str = typer.Option(default=None, prompt="Enter /<url end>")):
     url = f"http://127.0.0.1:5000/{enpoint}"
     response = requests.get(url)
-    typer.secho(f"{response.content}", fg=typer.colors.BRIGHT_CYAN)
+    typer.secho(f"{response.content}", fg=typer.colors.BRIGHT_GREEN)
 
 
 if __name__ == '__main__':

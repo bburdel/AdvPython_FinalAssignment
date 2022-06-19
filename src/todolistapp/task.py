@@ -8,8 +8,6 @@ Version: Python 3.10
 
 # pylint: disable=R1710
 
-# TODO write the data to the database as all lowercase? Then string format in the tables?
-
 import datetime as d
 from datetime import datetime
 from loguru import logger
