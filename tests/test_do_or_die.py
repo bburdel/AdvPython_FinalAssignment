@@ -36,9 +36,6 @@ def use_test_database(funcn):
     return inner
 
 
-@pytest.fixture
-def run_commands():
-    return "python3 do_or_die.py "
 
 
 def test_app():
@@ -55,26 +52,31 @@ def test_app():
 
 # @test_app2
 
-# @use_test_database
-@pytest.fixture
-def test_create_task(run_commands):
+def test_create_task():
     result = runner.invoke(app)
     with test_db.bind_ctx(MODEL):
         test_db.create_tables(MODEL)
         try:
-            create = dod.create("Test task",
+            dod.create("Test task",
                        "Test description",
                        "06/20/2022",
                        "06/23/2022")
-            (run_commands + create)
         finally:
             test_db.drop_tables(MODEL)
+    assert "\n" in result.stdout
+    # assert "Added, 'Test task,' to the list." in result.stdout
 
-    assert "Added, 'Test task,' to the list." in result.stdout
 
-#
-# @use_test_database
-# def test_complete_task(self):
-#     result = runner.invoke(app)
-#     dod.complete("Test task")
-#     assert "Test task -- LAID TO REST" in result.stdout
+def test_complete_task():
+    result = runner.invoke(app)
+    with test_db.bind_ctx(MODEL):
+        test_db.create_tables(MODEL)
+        try:
+            dod.create("Test task",
+                       "Test description",
+                       "06/20/2022",
+                       "06/23/2022")
+            dod.complete("Test task")
+        finally:
+            test_db.drop_tables(MODEL)
+    assert "\n" in result.stdout
