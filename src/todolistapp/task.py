@@ -125,8 +125,8 @@ class Task:
             row.save()
             return True
         except pw.DoesNotExist:
-            print("Peewee Error: pw.DoesNotExist")
-            logger.info("")
+            typer.secho("Peewee Error: pw.DoesNotExist", fg=typer.colors.BRIGHT_YELLOW)
+            # logger.info("")
             return False
 
     @staticmethod
