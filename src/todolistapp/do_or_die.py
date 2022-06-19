@@ -10,9 +10,9 @@ Author: BBurdelsky
 import typer
 from rich.console import Console
 import requests
-import todolistapp.task_model as tm
-from task import Task as t
-from task import TaskLists as tl
+import src.todolistapp.task_model as tm
+from src.todolistapp.task import Task as t
+from src.todolistapp.task import TaskLists as tl
 
 console = Console()
 
