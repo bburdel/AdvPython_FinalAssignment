@@ -36,7 +36,7 @@ class Tasks(BaseModel):
     # TODO more validation and checks in the parameters
     logger.info("peewee model == 'Tasks' created.")
     task_id = pw.CharField(primary_key=True)
-    task_name = pw.CharField(max_length=50, null=False)
+    task_name = pw.CharField(max_length=50, null=False, unique=True)
     task_details = pw.CharField(max_length=100)
     task_start_date = pw.DateField(formats='%m/%d/%Y')
     task_due_date = pw.DateField(formats='%m/%d/%Y')

@@ -1,9 +1,10 @@
 """
 Will contain tests for the tasks.py file
 """
-
+import builtins
 import unittest
 from unittest import TestCase
+from unittest.mock import patch
 import peewee as pw
 from loguru import logger
 # import pysnooper
@@ -37,23 +38,11 @@ def use_test_database(funcn):
     return inner
 
 
-# class TestDateHelper(TestCase):
-#     """
-#     Collection of unit tests for class 'DateHelper' in tasks.py
-#     """
-#     def test_check_date(self, date):
-#         pass
-#
-#     def test_date_conversion(self, date):
-#         pass
-#
-
 class TestTaskModel(TestCase):
     """
     Collection of unit tests for tasks.py
     """
 
-    # @pysnooper.snoop(depth=3)
     @use_test_database
     def test_add_task_true(self):
         """
@@ -86,7 +75,7 @@ class TestTaskModel(TestCase):
         Tests updating a task
         """
         t.Task.add_task("New task", "Placeholder", "6/18/2022", "6/20/2022")
-        updated_task = t.Task.update_task("Updated task", "Updated details",
+        updated_task = t.Task.update_task("New task", "Updated details",
                                           "6/18/2022", "6/20/2022")
 
         self.assertTrue(updated_task)
@@ -116,14 +105,57 @@ class TestTaskModel(TestCase):
         """
         Tests deleting a task
         """
-        pass
+        t.Task.add_task("New task", "Placeholder", "6/18/2022", "6/20/2022")
+        deleted_task = t.Task.delete_task("New task")
+        self.assertTrue(deleted_task)
+
+    @use_test_database
+    def test_delete_deleted_task(self):
+        """
+        Tests deleting a task that does not exist
+        """
+        t.Task.add_task("New task", "Placeholder", "6/18/2022", "6/20/2022")
+        # t.Task.delete_task("New task")
+        deleted_test = t.Task.delete_task("Nonexistent task")
+        self.assertRaises(pw.DoesNotExist)
+        self.assertFalse(deleted_test)
 
     @use_test_database
     def test_complete_task(self):
         """
         Tests completing a task
         """
-        pass
+        t.Task.add_task("New task", "Placeholder", "6/18/2022", "6/20/2022")
+        completed_task =t.Task.complete_task("New task")
+        self.assertTrue(completed_task)
+
+    @use_test_database
+    def test_complete_unk_task(self):
+        t.Task.add_task("New task", "Placeholder", "6/18/2022", "6/20/2022")
+        completed_task = t.Task.complete_task("Unknown task")
+        self.assertFalse(completed_task)
+        self.assertRaises(pw.DoesNotExist)
+
+
+# class TestTaskLists(TestCase):
+#     """
+#     Collection of tests for lists of database outputs
+#     """
+#
+#     @use_test_database
+#     @patch('builtins.print')
+#     def test_print_any_list(self, mock_print):
+#         query_result = [{"task_id": "123456789",
+#                                            "task_name": "Test task",
+#                                            "task_details": "Anything",
+#                                            "task_start_date": "6/18/2022",
+#                                            "task_due_date": "6/22/2022",
+#                                            "task_complete_date": "6/20/2022",
+#                                            "task_priority": "Medium",
+#                                            "task_status": "Complete",
+#                                            }]
+#         t.TaskLists.print_any_list_choice(query_result)
+#         mock_print.assert_called_with()
 
 
 if __name__ == '__main__':

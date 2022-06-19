@@ -16,7 +16,7 @@ from loguru import logger
 import peewee as pw
 from tabulate import tabulate
 import typer
-import pysnooper
+# import pysnooper
 import todolistapp.task_model as tm
 
 
@@ -143,7 +143,9 @@ class Task:
             # logger.info(f'Task name: {task_name} -- marked as deleted.')
             return True
         except pw.DoesNotExist:
-            logger.info(f'Could not modify task with name, "{task_name}," as it was not found.')
+            typer.secho(f'ERROR: Could not modify task with name, '
+                        f'"{task_name}," as it was not found.',
+                        fg=typer.colors.YELLOW)
             return False
 
     @staticmethod
