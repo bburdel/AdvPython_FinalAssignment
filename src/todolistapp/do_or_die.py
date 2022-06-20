@@ -13,6 +13,7 @@ import requests
 import todolistapp.task_model as tm
 from todolistapp.task import Task as t
 from todolistapp.task import TaskLists as tl
+from todolistapp.app import main
 
 console = Console()
 
@@ -239,10 +240,17 @@ def list_overdue():
                                                   """, fg=typer.colors.BRIGHT_RED)
 
 
-@app.command(short_help="get jsonified data from URL")
-def get_data(enpoint: str = typer.Option(default=None, prompt="Enter /<url end>")):
-    url = f"http://127.0.0.1:5000/{enpoint}"
+@app.command(short_help="Run Flask app API")
+def run_flask():
+    typer.echo("Establishing connection to local host")
+    main()
+
+
+@app.command(short_help="Get jsonified data from URL")
+def get_data(endpoint: str = typer.Option(default=None, prompt="Enter /<url end>")):
+    url = f"http://127.0.0.1:5000/{endpoint}"
     response = requests.get(url)
+    typer.secho(f"{url}", fg=typer.colors.BRIGHT_BLUE)
     typer.secho(f"{response.content}", fg=typer.colors.BRIGHT_GREEN)
 
 

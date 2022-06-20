@@ -1,7 +1,7 @@
 """
 Working with Flask, cURL, and JSON
 """
-
+import typer
 from flask import Flask
 from flask_restful import Resource, Api
 from sqlalchemy import create_engine
@@ -36,7 +36,7 @@ def main():
 
     api = Api(app)
     api.add_resource(TasksNames, "/all")  # Route 1
-
+    typer.echo(f"Route: http://127.0.0.1:5000/all")
     app.run(port=5000)
 
     db_connect.dispose()

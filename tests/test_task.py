@@ -7,12 +7,13 @@ Description: Unit tests for task.py
 # import unittest
 from unittest import TestCase
 # from unittest.mock import patch
+import datetime
 import peewee as pw
 from loguru import logger
 # import pysnooper
 from todolistapp.task_model import Tasks
 import todolistapp.task as t
-import datetime
+
 
 logger.info("Logging test activities from test_task.py")
 logger.add("out_test.log", backtrace=True, diagnose=True)
@@ -137,6 +138,9 @@ class TestTaskModel(TestCase):
 
     @use_test_database
     def test_complete_unk_task(self):
+        """
+        Tests completing a task that does not exist.
+        """
         t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         completed_task = t.Task.complete_task("Unknown task")
         self.assertFalse(completed_task)
