@@ -1,10 +1,12 @@
 """
-Will contain tests for the tasks.py file
+Title: test_task.py
+Description: Unit tests for task.py
+
 """
-import builtins
-import unittest
+# import builtins
+# import unittest
 from unittest import TestCase
-from unittest.mock import patch
+# from unittest.mock import patch
 import peewee as pw
 from loguru import logger
 # import pysnooper
@@ -15,25 +17,27 @@ import datetime
 logger.info("Logging test activities from test_task.py")
 logger.add("out_test.log", backtrace=True, diagnose=True)
 
-DATE = datetime.datetime.now().strftime('%m/%d/%Y')
+START_DATE = datetime.datetime.now().strftime('%m/%d/%Y')
+
+DUE_DATE = (datetime.date.today() + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
 
 MODEL = [Tasks]
 
 test_db = pw.SqliteDatabase(':memory:')
 
 
-def use_test_database(funcn):
+def use_test_database(func):
     """
     Uses a context manager to open, create table, and close
     a connection to a peewee (SQLite3 database)
     """
-    @pw.wraps(funcn)
+    @pw.wraps(func)
     def inner(self):
 
         with test_db.bind_ctx(MODEL):
             test_db.create_tables(MODEL)
             try:
-                funcn(self)
+                func(self)
             finally:
                 test_db.drop_tables(MODEL)
 
@@ -50,7 +54,7 @@ class TestTaskModel(TestCase):
         """
         Tests adding a task
         """
-        new_task = t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        new_task = t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         self.assertTrue(new_task)
         if new_task:
             logger.info("SUCCESS! Function works as expected.")
@@ -62,8 +66,8 @@ class TestTaskModel(TestCase):
         """
         Tests adding a duplicate task
         """
-        t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
-        dup_task = t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
+        dup_task = t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         self.assertFalse(dup_task)
         self.assertRaises(pw.IntegrityError)
         if not dup_task:
@@ -76,9 +80,9 @@ class TestTaskModel(TestCase):
         """
         Tests updating a task
         """
-        t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         updated_task = t.Task.update_task("New task", "Updated details",
-                                          "6/18/2022", "6/20/2022")
+                                          START_DATE, DUE_DATE)
 
         self.assertTrue(updated_task)
         if updated_task:
@@ -91,10 +95,10 @@ class TestTaskModel(TestCase):
         """
         Tests updating an unknown (task does not exist) task
         """
-        t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         unknown_task_update = t.Task.update_task("Non-existent task",
                                                  "Test it fails to update",
-                                                 "6/18/2022", "6/25/2022")
+                                                 START_DATE, "6/25/2022")
         self.assertFalse(unknown_task_update)
         self.assertRaises(pw.DoesNotExist)
         if not unknown_task_update:
@@ -107,7 +111,7 @@ class TestTaskModel(TestCase):
         """
         Tests deleting a task
         """
-        t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         deleted_task = t.Task.delete_task("New task")
         self.assertTrue(deleted_task)
 
@@ -116,7 +120,7 @@ class TestTaskModel(TestCase):
         """
         Tests deleting a task that does not exist
         """
-        t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         # t.Task.delete_task("New task")
         deleted_test = t.Task.delete_task("Nonexistent task")
         self.assertRaises(pw.DoesNotExist)
@@ -127,13 +131,13 @@ class TestTaskModel(TestCase):
         """
         Tests completing a task
         """
-        t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         completed_task =t.Task.complete_task("New task")
         self.assertTrue(completed_task)
 
     @use_test_database
     def test_complete_unk_task(self):
-        t.Task.add_task("New task", "Placeholder", DATE, "6/20/2022")
+        t.Task.add_task("New task", "Placeholder", START_DATE, DUE_DATE)
         completed_task = t.Task.complete_task("Unknown task")
         self.assertFalse(completed_task)
         self.assertRaises(pw.DoesNotExist)
@@ -152,7 +156,7 @@ class TestTaskModel(TestCase):
 #                                            "task_details": "Anything",
 #                                            "task_start_date": "6/18/2022",
 #                                            "task_due_date": "6/22/2022",
-#                                            "task_complete_date": "6/20/2022",
+#                                            "task_complete_date": DUE_DATE,
 #                                            "task_priority": "Medium",
 #                                            "task_status": "Complete",
 #                                            }]

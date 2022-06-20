@@ -226,7 +226,7 @@ class TaskLists:
     def task_list_id_sort(choice):
         """
 
-        :param choice:
+        :param choice: (string)
         :return:
         """
         list_of_dicts = []
@@ -261,23 +261,28 @@ class TaskLists:
         # underline = '\033[4m'
         bullet = '\u2022'
         try:
-            query = tm.Tasks.select().where(tm.Tasks.task_status != 'Deleted') \
+            query = tm.Tasks.select().where(tm.Tasks.task_status == 'In Progress') \
                 .order_by(tm.Tasks.task_due_date)
             # print("Prioritized Task List")
             typer.secho("Prioritized Task List", fg=typer.colors.BRIGHT_BLUE)
             for row in query:
                 # print("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}")
                 if row.task_priority == "High":
+                    typer.secho("    SLAY these tasks before they SLAY you!",
+                                fg=typer.colors.RED)
                     typer.secho("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}",
                                 fg=typer.colors.BRIGHT_RED)
+            for row in query:
                 if row.task_priority == "Medium":
                     typer.secho("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}",
                                 fg=typer.colors.BRIGHT_YELLOW)
+            for row in query:
                 if row.task_priority == "Low":
                     typer.secho("\t" + bullet + f"Task: {row.task_name}" + f"\n\t Priority: {row.task_priority}",
                                 fg=typer.colors.BRIGHT_GREEN)
         except Exception as e:
-            logger.info(e)
+            # logger.info(e)
+            typer.echo(f"EXCEPTION: {e}")
 
     # List all open tasks sorted by due date
     @staticmethod
