@@ -33,21 +33,21 @@ class TaskNames(Resource):
         return jsonify(result)
 
 
-class TaskDetails(Resource):
-    """
-    Simple class containing a get function
-    """
-
-    def get(self, task_name: str):
-        """
-        returns the task name and details for all tasks in database
-        """
-        conn = db_connect.connect()
-        query = conn.execute(f"select * from Tasks where task_name =={str(task_name)} ")
-        result = {"data": [dict(zip(tuple(query.keys()), i))
-                           for i in query.cursor]}
-        conn.close()
-        return jsonify(result)
+# class TaskDetails(Resource):
+#     """
+#     Simple class containing a get function
+#     """
+#
+#     def get(self, task_name: str):
+#         """
+#         returns the task name and details for all tasks in database
+#         """
+#         conn = db_connect.connect()
+#         query = conn.execute(f"select * from Tasks where task_name =={str(task_name)} ")
+#         result = {"data": [dict(zip(tuple(query.keys()), i))
+#                            for i in query.cursor]}
+#         conn.close()
+#         return jsonify(result)
 
 
 def main():
