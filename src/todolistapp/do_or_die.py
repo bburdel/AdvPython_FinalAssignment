@@ -247,7 +247,7 @@ def run_flask():
 
 
 @app.command(short_help="Get jsonified data from URL")
-def get_data(endpoint: str = typer.Option(default=None, prompt="Enter /<url end>")):
+def get_data(endpoint: str = typer.Option(default=None, prompt="Enter <url key word>")):
     url = f"http://127.0.0.1:5000/{endpoint}"
     response = requests.get(url)
     typer.secho(f"{url}", fg=typer.colors.BRIGHT_BLUE)

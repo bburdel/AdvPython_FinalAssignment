@@ -14,7 +14,6 @@ from loguru import logger
 import peewee as pw
 from tabulate import tabulate
 import typer
-# import pysnooper
 import todolistapp.task_model as tm
 
 
@@ -28,7 +27,7 @@ class DateHelper:
         """
         This function checks a date and ensures that it is valid, i.e., it is not in the past.
         :param date: (string) date
-        :return: Nothing
+        :return: (bool)
         """
         today = datetime.now()  # No timezone is specified but could be passed as an argument.
         past_check = datetime.strptime(date, '%m/%d/%Y')
@@ -80,7 +79,6 @@ class Task:
             return priority
 
     @staticmethod
-    # @pysnooper.snoop(depth=1)
     def add_task(task_name, task_description, start_date, due_date):
         """
         Adds a task to a SQLite database table called Tasks
@@ -158,10 +156,10 @@ class Task:
             row_query.task_status = 'Completed'
             row_query.task_complete_date = datetime.now().strftime('%m/%d/%Y')
             row_query.save()
-            logger.info(f'Task name: {task_name} -- is Complete!')
+            # typer.echo(f'Task name: {task_name} -- is Complete!')
             return True
         except pw.DoesNotExist:
-            logger.info(f'Could not modify task with name, "{task_name}," as it was not found.')
+            typer.echo(f'Could not modify task with name, "{task_name}," as it was not found.')
             return False
 
 
@@ -194,7 +192,7 @@ class TaskLists:
                                                           'Start Date', 'Due Date',
                                                           'Completed On', 'Priority', 'Status'],
                                  tablefmt='fancy_grid')
-        typer.secho(f"{colored_table}", fg=typer.colors.BRIGHT_BLACK)
+        typer.secho(f"{colored_table}", fg=typer.colors.BRIGHT_WHITE)
 
     @staticmethod
     def database_report():
@@ -331,7 +329,6 @@ class TaskLists:
 
     # List all overdue tasks
     @staticmethod
-    # @pysnooper.snoop(depth=2)
     def task_list_overdue_sort():
         """
         Uses peewee to query SQLite database for overdue tasks

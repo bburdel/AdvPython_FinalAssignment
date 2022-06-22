@@ -38,3 +38,7 @@ The task app must produce the following lists:
 6. All lists must be correctly formatted for display in a terminal.
 
 You should develop extensive automated tests as part of building this system.
+
+## Part 2
+Build an API to the task app, using curl to enter commands, and returning the results as josn structures.
+You application must be built so that you can either use the terminal or curl interface.
