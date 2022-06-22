@@ -7,15 +7,21 @@ import peewee as pw
 from todolistapp.task_model import Tasks
 import todolistapp.do_or_die as dod
 from todolistapp.do_or_die import app
+import datetime
 
 
 runner = CliRunner()
+
+START_DATE = datetime.datetime.now().strftime('%m/%d/%Y')
+
+DUE_DATE = (datetime.date.today() + datetime.timedelta(days=4)).strftime('%m/%d/%Y')
 
 MODEL = [Tasks]
 
 test_db = pw.SqliteDatabase(':memory:')
 
-
+# This wrapper does not work well
+# I used the context manage inside the test function instead
 def use_test_database(func):
     """
     Uses a context manager to open, create table, and close
@@ -31,8 +37,8 @@ def use_test_database(func):
                 func(self)
             finally:
                 test_db.drop_tables(MODEL)
-
     return inner
+
 
 
 def test_app():
@@ -55,8 +61,8 @@ def test_create_task():
         try:
             dod.create("Test task",
                        "Test description",
-                       "06/20/2022",
-                       "06/23/2022")
+                       START_DATE,
+                       DUE_DATE)
         finally:
             test_db.drop_tables(MODEL)
     assert "\n" in result.stdout
@@ -74,9 +80,48 @@ def test_complete_task():
         try:
             dod.create("Test task",
                        "Test description",
-                       "06/20/2022",
-                       "06/23/2022")
+                       START_DATE,
+                       DUE_DATE)
             dod.complete("Test task")
+        finally:
+            test_db.drop_tables(MODEL)
+    assert "\n" in result.stdout
+
+def test_update_task():
+    """
+    Attempts to test the output of the complete function.
+    :return:
+    """
+    result = runner.invoke(app)
+    with test_db.bind_ctx(MODEL):
+        test_db.create_tables(MODEL)
+        try:
+            dod.create("Test task",
+                       "Test description",
+                       START_DATE,
+                       DUE_DATE)
+            dod.update("Modified task",
+                       "Modified description",
+                       START_DATE,
+                       DUE_DATE)
+        finally:
+            test_db.drop_tables(MODEL)
+    assert "\n" in result.stdout
+
+def test_delete_task():
+    """
+    Attempts to test the output of the complete function.
+    :return:
+    """
+    result = runner.invoke(app)
+    with test_db.bind_ctx(MODEL):
+        test_db.create_tables(MODEL)
+        try:
+            dod.create("Test task",
+                       "Test description",
+                       START_DATE,
+                       DUE_DATE)
+            dod.delete("Test task")
         finally:
             test_db.drop_tables(MODEL)
     assert "\n" in result.stdout
